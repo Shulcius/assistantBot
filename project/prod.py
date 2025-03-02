@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import datetime
 import psycopg2
 import asyncio
@@ -8,27 +10,28 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import (
     Message,
-    InlineKeyboardMarkup,
-    InlineKeyboardButton
 )
-
-from form import Form
-from test_usage.config import bToken
+from aiogram.fsm.state import StatesGroup, State
+load_dotenv()
 
 # date_time = datetime.datetime.now().strftime("%d.%m.%Y")
 # work_time = datetime.datetime.now().strftime("%H:%M:%S")
 
-# Конфигурация базы данных
 DB_CONFIG = {
-    'host': 'test',
-    'database': 'test',
-    'user': 'test',
-    'password': 'test'
+    'host': os.getenv('HOST'),
+    'database': os.getenv('DATABASE'),
+    'user': os.getenv('USER'),
+    'password': os.getenv('PASSWORD')
 }
 
 logging.basicConfig(level=logging.INFO)
-bot = Bot(token=bToken)
+bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher()
+
+class Form(StatesGroup):
+    first_name: str = State()
+    second_name: str = State()
+    group: str = State()
 
 
 @dp.message(Command("start"))
