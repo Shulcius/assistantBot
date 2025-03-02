@@ -20,10 +20,10 @@ from test_usage.config import bToken
 
 # Конфигурация базы данных
 DB_CONFIG = {
-    'host': 'localhost',
-    'database': 'postgres',
-    'user': 'postgres',
-    'password': '4242564'
+    'host': 'test',
+    'database': 'test',
+    'user': 'test',
+    'password': 'test'
 }
 
 logging.basicConfig(level=logging.INFO)
