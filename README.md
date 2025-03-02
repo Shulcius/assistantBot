@@ -1,13 +1,3 @@
-# Teacher's Assistant Bot
-
-This bot is designed to help teachers and their students learn Python. The functionality includes:
-
-1. **User Registration**: Saving progress and settings.
-2. **Getting Homework and Study Materials**: Access to assignments on various topics.
-3. **Verification of Problem Solutions**: Automatic verification of the code for the correctness of the task.
-
-The project aims to simplify the learning process and provide a convenient tool for programming practice.
-
 # Бот помощник учителя
 
 Этот бот предназначен для помощи преподавателям и их ученикам в изучении языка Python. Функционал включает:
@@ -17,3 +7,40 @@ The project aims to simplify the learning process and provide a convenient tool 
 3. **Проверка решений задач**: Автоматическая проверка кода на корректность выполнения задания.
 
 Проект нацелен на упрощение процесса обучения и предоставление удобного инструмента для практики программирования.
+
+# Установка и настройка
+## Убедитесь, что у вас установлены все необходимые зависимости:
+
+```
+pip install -r requirements.txt
+```
+### Создайте файл .env и добавьте туда токен вашего бота:
+```
+BOT_TOKEN=<ваш_токен>
+```
+### Настройте подключение к базе данных PostgreSQL:
+```
+DB_CONFIG = {
+    'host': '<хост>',
+    'database': '<база_данных>',
+    'user': '<пользователь>',
+    'password': '<пароль>'
+}
+```
+### Запустите бота:
+```
+python main.py
+```
+### Команды бота
+
+/start — приветственное сообщение и информация о командах.
+/help — список доступных команд.
+/reg — начните процесс регистрации.
+Структура проекта
+main.py — основной файл запуска бота.
+form.py — класс Form для работы с FSM.
+config.py — конфигурационный файл с токеном бота.
+requirements.txt — файл зависимостей.
+
+### Лицензия
+Данный проект распространяется под лицензией MIT. Вы можете свободно использовать, изменять и распространять его, соблюдая условия лицензии.
