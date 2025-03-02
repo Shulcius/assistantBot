@@ -142,7 +142,6 @@ async def process_group(message: Message, state: FSMContext) -> None:
 
     await state.clear()
 
-
 async def main():
     await dp.start_polling(bot)
 
