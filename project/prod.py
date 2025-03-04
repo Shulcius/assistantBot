@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-import datetime
 import psycopg2
 import asyncio
 import logging
@@ -12,10 +11,8 @@ from aiogram.types import (
     Message,
 )
 from aiogram.fsm.state import StatesGroup, State
+from aiogram import F
 load_dotenv()
-
-# date_time = datetime.datetime.now().strftime("%d.%m.%Y")
-# work_time = datetime.datetime.now().strftime("%H:%M:%S")
 
 DB_CONFIG = {
     'host': os.getenv('HOST'),
@@ -34,12 +31,28 @@ class Form(StatesGroup):
     group: str = State()
 
 
+@dp.message(F.new_chat_members)
+async def somebody_added(message: Message):
+    for user in message.new_chat_members:
+        await message.answer(
+            f"У нас в группе пополнение!"
+            f"Добро пожаловать {user.full_name}"
+        )
+
+
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer(
-        f"Приветствую тебя, {message.from_user.full_name}.\n"
-        f"Нажми на -> /help <- чтобы подробнее ознакомиться с моим функционалом"
-    )
+    if message.chat.type != 'private':
+        await message.answer(
+            f"Добро пожаловать в {message.chat.title}\n"
+            f"{message.from_user.full_name}.\n"
+            f"Нажми на -> /help <- чтобы подробнее ознакомиться с моим функционалом"
+        )
+    else:
+        await message.answer(
+            f"Привет, {message.from_user.full_name}.\n"
+            f"Нажми на -> /help <- чтобы подробнее ознакомиться с моим функционалом"
+        )
 
 
 @dp.message(Command("help"))
@@ -48,6 +61,8 @@ async def cmd_help(message: types.Message):
         f"Доступные команды:\n"
         "\n/start - начало работы с ботом\n"
         "/reg - создание профиля\n"
+        # "/learn - материалы на паре\n"
+        # "/code - решаем задачки"
     )
 
 
@@ -141,6 +156,7 @@ async def process_group(message: Message, state: FSMContext) -> None:
         conn.close()
 
     await state.clear()
+
 
 async def main():
     await dp.start_polling(bot)
