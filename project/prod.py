@@ -83,7 +83,7 @@ async def check_for_bad_words(message: types.Message):
 
 @dp.message(F.text.lower().contains('http'))
 async def process_find_word(message: Message):
-    await message.answer('Это нельзя происзонисть в слух')
+    await message.answer('Это нельзя произносисть в слух')
     await bot.delete_message(message.chat.id, message.message_id)
 
 
