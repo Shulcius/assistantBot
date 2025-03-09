@@ -34,27 +34,17 @@ class Form(StatesGroup):
 
 def contains_bad_words(text):
     bad_words_patterns = [
-        r'(?:\b|\W)бля\w*(?:\b|\W)',
-        r'(?:\b|\W)гов\w*(?:\b|\W)',
-        r'(?:\b|\W)сука\w*(?:\b|\W)',
-        r'(?:\b|\W)хуй\w*(?:\b|\W)',
-        r'(?:\b|\W)хуe\w*(?:\b|\W)',
-        r'(?:\b|\W)гонд\w*(?:\b|\W)',
-        r'(?:\b|\W)пидо\w*(?:\b|\W)',
-        r'(?:\b|\W)чмо\w*(?:\b|\W)',
-        r'(?:\b|\W)ебла\w*(?:\b|\W)',
-        r'(?:\b|\W)еба\w*(?:\b|\W)',
-        r'(?:\b|\W)сучка\w*(?:\b|\W)',
-        r'(?:\b|\W)заеб\w*(?:\b|\W)',
-        r'(?:\b|\W)заёб\w*(?:\b|\W)',
-        r'(?:\b|\W)мраз\w*(?:\b|\W)',
-        r'(?:\b|\W)ебал\w*(?:\b|\W)',
-        r'(?:\b|\W)пизд\w*(?:\b|\W)',
-        r'(?:\b|\W)ебуч\w*(?:\b|\W)',
-        r'(?:\b|\W)шлюх\w*(?:\b|\W)',
-        r'(?:\b|\W)шлюш\w*(?:\b|\W)',
-        r'(?:\b|\W)гей\w*(?:\b|\W)',
-        r'(?:\b|\W)тупо\w*(?:\b|\W)',
+        r'(?:\b|\W)бля\w*(?:\b|\W)', r'(?:\b|\W)говн\w*(?:\b|\W)', r'(?:\b|\W)гавн\w*(?:\b|\W)',
+        r'(?:\b|\W)сука\w*(?:\b|\W)', r'(?:\b|\W)хуй\w*(?:\b|\W)', r'(?:\b|\W)хуе\w*(?:\b|\W)',
+        r'(?:\b|\W)гонд\w*(?:\b|\W)', r'(?:\b|\W)пидо\w*(?:\b|\W)', r'(?:\b|\W)чмо\w*(?:\b|\W)',
+        r'(?:\b|\W)ебла\w*(?:\b|\W)', r'(?:\b|\W)еба\w*(?:\b|\W)', r'(?:\b|\W)сучка\w*(?:\b|\W)',
+        r'(?:\b|\W)заеб\w*(?:\b|\W)', r'(?:\b|\W)заёб\w*(?:\b|\W)', r'(?:\b|\W)мраз\w*(?:\b|\W)',
+        r'(?:\b|\W)ебал\w*(?:\b|\W)', r'(?:\b|\W)пизд\w*(?:\b|\W)', r'(?:\b|\W)ебуч\w*(?:\b|\W)',
+        r'(?:\b|\W)шлюх\w*(?:\b|\W)', r'(?:\b|\W)шлюш\w*(?:\b|\W)', r'(?:\b|\W)гей\w*(?:\b|\W)',
+        r'(?:\b|\W)тупо\w*(?:\b|\W)', r'(?:\b|\W)залуп\w*(?:\b|\W)', r'(?:\b|\W)пенис\w*(?:\b|\W)',
+        r'(?:\b|\W)член\w*(?:\b|\W)', r'(?:\b|\W)хули\w*(?:\b|\W)', r'(?:\b|\W)путана\w*(?:\b|\W)',
+        r'(?:\b|\W)дрочила\w*(?:\b|\W)', r'(?:\b|\W)пердун\w*(?:\b|\W)', r'(?:\b|\W)малаф\w*(?:\b|\W)',
+        r'(?:\b|\W)http\w*(?:\b|\W)'
     ]
 
     pattern = re.compile('|'.join(bad_words_patterns), flags=re.IGNORECASE | re.UNICODE)
@@ -64,42 +54,20 @@ def contains_bad_words(text):
 
 
 @dp.message(F.new_chat_members)
-async def somebody_added(message: Message):
+async def somebody_added(message: types.Message):
     for user in message.new_chat_members:
         await message.answer(
-            f"У нас в группе пополнение!"
+            f"У нас в группе пополнение!\n"
             f"Добро пожаловать {user.full_name}"
         )
 
 
-@dp.message()
-async def check_for_bad_words(message: types.Message):
-    if contains_bad_words(message.text):
-        await message.reply("Пожалуйста, соблюдайте корректность общения.")
-        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-    else:
-        pass
-
-
-@dp.message(F.text.lower().contains('http'))
-async def process_find_word(message: Message):
-    await message.answer('Это нельзя произносисть в слух')
-    await bot.delete_message(message.chat.id, message.message_id)
-
-
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    if message.chat.type != 'private':
-        await message.answer(
-            f"Добро пожаловать в {message.chat.title}\n"
-            f"{message.from_user.full_name}.\n"
-            f"Нажми на -> /help <- чтобы подробнее ознакомиться с моим функционалом"
-        )
-    else:
-        await message.answer(
-            f"Привет, {message.from_user.full_name}.\n"
-            f"Нажми на -> /help <- чтобы подробнее ознакомиться с моим функционалом"
-        )
+    await message.answer(
+        f"Привет, {message.from_user.full_name}.\n"
+        f"Нажми на -> /help <- чтобы подробнее ознакомиться с моим функционалом"
+    )
 
 
 @dp.message(Command("help"))
@@ -205,7 +173,24 @@ async def process_group(message: Message, state: FSMContext) -> None:
     await state.clear()
 
 
+@dp.message(F.text)
+async def check_for_bad_words(message: types.Message):
+    if contains_bad_words(str(message.text)):
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    else:
+        pass
+
+
+@dp.edited_message(F.text)
+async def check_for_bad_words(message: types.Message):
+    if contains_bad_words(str(message.text)):
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    else:
+        pass
+
+
 async def main():
+    await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
 
