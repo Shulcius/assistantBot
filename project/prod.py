@@ -1,5 +1,7 @@
 import os
 import re
+
+from aiogram.dispatcher import router
 from dotenv import load_dotenv
 import psycopg2
 import asyncio
@@ -44,13 +46,28 @@ def contains_bad_words(text):
         r'(?:\b|\W)тупо\w*(?:\b|\W)', r'(?:\b|\W)залуп\w*(?:\b|\W)', r'(?:\b|\W)пенис\w*(?:\b|\W)',
         r'(?:\b|\W)член\w*(?:\b|\W)', r'(?:\b|\W)хули\w*(?:\b|\W)', r'(?:\b|\W)путана\w*(?:\b|\W)',
         r'(?:\b|\W)дрочила\w*(?:\b|\W)', r'(?:\b|\W)пердун\w*(?:\b|\W)', r'(?:\b|\W)малаф\w*(?:\b|\W)',
-        r'(?:\b|\W)http\w*(?:\b|\W)'
+        # r'(?:\b|\W)http\w*(?:\b|\W)'
     ]
 
     pattern = re.compile('|'.join(bad_words_patterns), flags=re.IGNORECASE | re.UNICODE)
     match = pattern.search(text)
 
     return bool(match)
+
+
+def contains_find(text):
+    find_words_patterns = [
+        r'(?:\b|\W)найди\w*(?:\b|\W)', r'(?:\b|\W)найти\w*(?:\b|\W)', r'(?:\b|\W)поищи\w*(?:\b|\W)',
+    ]
+
+    pattern = re.compile('|'.join(find_words_patterns), flags=re.IGNORECASE | re.UNICODE)
+    match = pattern.search(text)
+
+    return bool(match)
+
+
+def remove_word(sentence, word):
+    return sentence.replace(word, '')
 
 
 @dp.message(F.new_chat_members)
@@ -76,8 +93,6 @@ async def cmd_help(message: types.Message):
         f"Доступные команды:\n"
         "\n/start - начало работы с ботом\n"
         "/reg - создание профиля\n"
-        # "/learn - материалы на паре\n"
-        # "/code - решаем задачки"
     )
 
 
@@ -184,9 +199,26 @@ async def check_for_bad_words(message: types.Message):
 @dp.edited_message(F.text)
 async def check_for_bad_words(message: types.Message):
     if contains_bad_words(str(message.text)):
+        await bot.send_message(chat_id=message.chat.id, text='хуйня?',reply_to_message_id=message.message_id)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    else:
+        await message.answer('поменял текст?')
+
+
+@dp.message(F.document)
+async def delete_all_photo(message: types.Message):
+    if message.document:
         await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     else:
         pass
+
+
+@dp.message(F.text)
+async def handle_find_command(message: types.Message):
+    if contains_find(str(message.text)):
+        await bot.send_message(chat_id=message.chat.id, text='1', reply_to_message_id=message.message_id)
+    else:
+        await bot.send_message(chat_id=message.chat.id, text='0', reply_to_message_id=message.message_id)
 
 
 async def main():
